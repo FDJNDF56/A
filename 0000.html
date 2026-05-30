@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨KITSCH INSTA PROFILE✨</title>
+    <link href="https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css" rel="stylesheet">
+    <style>
+        /* 🌈 정신없고 화려한 키치 배경 */
+        body {
+            font-family: 'Galmuri11', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-color: #ff007f;
+            /* 네온 핑크 & 옐로우 체커보드 배경 */
+            background-image: 
+                repeating-linear-gradient(45deg, #ff007f 25%, transparent 25%, transparent 75%, #ff007f 75%, #ff007f),
+                repeating-linear-gradient(45deg, #ff007f 25%, #ccff00 25%, #ccff00 75%, #ff007f 75%, #ff007f);
+            background-position: 0 0, 30px 30px;
+            background-size: 60px 60px;
+        }
+
+        /* ✨ 떠다니는 스티커 애니메이션 */
+        .sticker {
+            position: absolute;
+            font-size: 3rem;
+            animation: float 3s ease-in-out infinite alternate;
+            z-index: 0;
+            text-shadow: 3px 3px 0px #000;
+        }
+        .s1 { top: 10%; left: 10%; animation-delay: 0s; transform: rotate(-20deg); } 
+        .s2 { top: 70%; left: 15%; animation-delay: 0.5s; transform: rotate(15deg); } 
+        .s3 { top: 20%; right: 10%; animation-delay: 1s; font-size: 4rem; } 
+        .s4 { top: 80%; right: 15%; animation-delay: 0.2s; transform: rotate(-10deg); } 
+        .s5 { top: 50%; left: 5%; animation: spin 4s linear infinite; } 
+
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); }
+            100% { transform: translateY(-20px) scale(1.1); }
+        }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 📱 키치한 스마트폰 컨테이너 */
+        .smartphone {
+            width: 380px;
+            height: 750px;
+            background: #fff;
+            border: 12px solid #000;
+            border-radius: 40px;
+            position: relative;
+            z-index: 10;
+            box-shadow: 20px 20px 0px #00ffcc, -10px -10px 0px #ff00ff;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 상단 노치 */
+        .smartphone::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 25px;
+            background-color: #000;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            z-index: 20;
+        }
+
+        /* 📸 인스타그램 앱 UI 헤더 */
+        .app-header {
+            background: linear-gradient(90deg, #ff007f, #ccff00);
+            color: #000;
+            padding: 35px 15px 10px 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 0px #fff;
+            border-bottom: 4px solid #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 🔄 인스타그램 스토리 (세력 선택 탭) */
+        .story-container {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: #fff;
+            border-bottom: 4px solid #000;
+            overflow-x: auto;
+        }
+        .story-container::-webkit-scrollbar { display: none; }
+
+        .story-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            gap: 5px;
+            transition: transform 0.1s;
+        }
+        .story-item:hover { transform: scale(1.1); }
+
+        .story-ring {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3px;
+        }
+        .story-ring.active {
+            background: linear-gradient(45deg, #00ffcc, #ccff00);
+        }
+
+        .story-icon {
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            border-radius: 50%;
+            border: 2px solid #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            box-sizing: border-box;
+        }
+        .story-name { font-size: 0.75rem; font-weight: bold; }
+
+        /* 🔽 메인 피드 스크롤 영역 */
+        .feed-area {
+            flex: 1;
+            overflow-y: auto;
+            background-color: #fffaf0;
+            position: relative;
+        }
+        .feed-area::-webkit-scrollbar { width: 8px; }
+        .feed-area::-webkit-scrollbar-thumb { background: #ff007f; border: 2px solid #000; }
+
+        /* 세력 뷰 */
+        .faction-view { display: none; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .faction-view.active { display: block; }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* 👤 개별 프로필 카드 */
+        .profile-wrapper {
+            border-bottom: 5px dashed #000;
+            padding: 20px 15px;
+            background: repeating-linear-gradient(0deg, transparent, transparent 19px, #ccc 20px);
+            background-size: 100% 20px;
+        }
+
+        .profile-top {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #000;
+            box-shadow: 4px 4px 0px #ff007f;
+            object-fit: cover;
+            background-color: #fff;
+            image-rendering: pixelated;
+        }
+
+        .profile-stats {
+            display: flex;
+            flex: 1;
+            justify-content: space-around;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        .stat-num { font-weight: bold; font-size: 1.1rem; color: #000; }
+
+        .profile-bio { margin-bottom: 15px; }
+        .bio-name { font-weight: bold; font-size: 1.1rem; color: #ff007f; margin-bottom: 5px; }
+        .bio-quote { font-size: 0.9rem; background: #000; color: #00ffcc; padding: 5px; border-radius: 5px; display: inline-block; }
+
+        .action-btns {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            flex: 1;
+            padding: 8px;
+            font-family: 'Galmuri11', sans-serif;
+            font-weight: bold;
+            text-align: center;
+            border: 3px solid #000;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px #000;
+        }
+        .btn-follow { background-color: #ccff00; color: #000; }
+        .btn-msg { background-color: #e0e0e0; color: #000; }
+        .btn:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px #000; }
+
+        /* 💬 메세지 모달 스타일 (추가됨) */
+        .msg-modal {
+            display: none; /* 기본적으로 숨김 */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(2px);
+        }
+        .msg-modal.active {
+            display: flex; /* 활성화 시 보임 */
+        }
+        .msg-content {
+            background: #fff;
+            border: 4px solid #000;
+            border-radius: 20px;
+            padding: 20px;
+            width: 75%;
+            box-shadow: 8px 8px 0px #ff00ff;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .msg-content h3 {
+            margin: 0;
+            color: #ff007f;
+            text-shadow: 1px 1px 0px #000;
+            font-size: 1.1rem;
+            border-bottom: 3px dashed #000;
+            padding-bottom: 10px;
+            text-align: center;
+        }
+        .msg-content textarea {
+            font-family: 'Galmuri11', sans-serif;
+            border: 3px solid #000;
+            border-radius: 10px;
+            padding: 10px;
+            resize: none;
+            outline: none;
+            background: #fffaf0;
+            font-size: 0.9rem;
+        }
+        .msg-content textarea:focus {
+            background: #e6ffff;
+        }
+        .msg-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-send { background-color: #00ffcc; }
+        .btn-cancel { background-color: #ffb3ba; }
+
+    </style>
+</head>
+<body>
+
+    <!-- 키치한 배경 떠다니는 요소들 -->
+    <div class="sticker s1">🍓</div>
+    <div class="sticker s2">👓</div>
+    <div class="sticker s3">🌂</div>
+    <div class="sticker s4">🚓</div>
+    <div class="sticker s5">💣</div>
+
+    <div class="smartphone">
+        <!-- 앱 상단 -->
+        <div class="app-header">
+            <span>📸 GINTAMA-GRAM</span>
+            <span>✨</span>
+        </div>
+
+        <!-- 스토리 탭 (세력 선택) -->
+        <div class="story-container">
+            <div class="story-item" onclick="showFaction('yorozuya', this)">
+                <div class="story-ring active"><div class="story-icon">🍓</div></div>
+                <span class="story-name">해결사</span>
+            </div>
+            <div class="story-item" onclick="showFaction('shinsengumi', this)">
+                <div class="story-ring"><div class="story-icon">🚓</div></div>
+                <span class="story-name">진선조</span>
+            </div>
+            <div class="story-item" onclick="showFaction('joyi', this)">
+                <div class="story-ring"><div class="story-icon">💣</div></div>
+                <span class="story-name">양이4인방</span>
+            </div>
+            <div class="story-item" onclick="showFaction('harusame', this)">
+                <div class="story-ring"><div class="story-icon">🌂</div></div>
+                <span class="story-name">하루사메</span>
+            </div>
+        </div>
+
+        <!-- 피드 영역 -->
+        <div class="feed-area">
+            
+            <!-- [1] 해결사 피드 -->
+            <div id="yorozuya" class="faction-view active">
+                <div class="profile-wrapper">
+                    <div class="profile-top">
+                        <img src="https://github.com/FDJNDF56/A/blob/main/01.webp?raw=true" alt="긴토키" class="profile-pic">
+                        <div class="profile-stats">
+                            <div><div class="stat-num">999</div>게시물</div>
+                            <div><div class="stat-num">10M</div>팔로워</div>
+                            <div><div class="stat-num">0</div>팔로잉</div>
+                        </div>
+                    </div>
+                    <div class="profile-bio">
+                        <div class="bio-name">▶ 사카타 긴토키 (@gin_chan_boss) 🍡</div>
+                        <div class="bio-quote">"ギャーギャーギャーギャーやかましいんだよ、発情期ですかコノヤロー"</div>
+                    </div>
+                    <div class="action-btns">
+                        <div class="btn btn-follow">Follow +</div>
+                        <div class="btn btn-msg" onclick="openMessageModal(this)">Message</div>
+                    </div>
+                </div>
+
+                <div class="profile-wrapper">
+                    <div class="profile-top">
+                        <img src="https://github.com/FDJNDF56/A/blob/main/02.webp?raw=true" alt="신파치" class="profile-pic">
+                        <div class="profile-stats">
+                            <div><div class="stat-num">45</div>게시물</div>
+                            <div><div class="stat-num">200</div>팔로워</div>
+                            <div><div class="stat-num">1</div>팔로잉</div>
+                        </div>
+                    </div>
+                    <div class="profile-bio">
+                        <div class="bio-name">▶ 시무라 신파치 (@megane_body) 👓</div>
+                        <div class="bio-quote">"誰がメガネかけ器ですかァァァ！！"</div>
+                    </div>
+                    <div class="action-btns">
+                        <div class="btn btn-follow">Follow +</div>
+                        <div class="btn btn-msg" onclick="openMessageModal(this)">Message</div>
+                    </div>
+                </div>
+
+                <div class="profile-wrapper">
+                    <div class="profile-top">
+                        <img src="https://github.com/FDJNDF56/A/blob/main/03.webp?raw=true" alt="카구라" class="profile-pic">
+                        <div class="profile-stats">
+                            <div><div class="stat-num">120</div>게시물</div>
+                            <div><div class="stat-num">500k</div>팔로워</div>
+                            <div><div class="stat-num">10</div>팔로잉</div>
+                        </div>
+                    </div>
+                    <div class="profile-bio">
+                        <div class="bio-name">▶ 카구라 (@queen_of_kabukicho) 🌂</div>
+                        <div class="bio-quote">"私はかぶき町の女王、神楽だヨ!"</div>
+                    </div>
+                    <div class="action-btns">
+                        <div class="btn btn-follow">Follow +</div>
+                        <div class="btn btn-msg" onclick="openMessageModal(this)">Message</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- [2] 진선조 피드 -->
+            <div id="shinsengumi" class="faction-view">
+                <div class="profile-wrapper">
+                    <div class="profile-top">
+                        <img src="콘도 이사오.jpg" alt="콘도" class="profile-pic" onerror="this.src='https://via.placeholder.com/80/000000/ccff00?text=GORILLA'">
+                        <div class="profile-stats">
+                            <div><div class="stat-num">800</div>게시물</div>
+                            <div><div class="stat-num">10k</div>팔로워</div>
+                            <div><div class="stat-num">1</div>팔로잉</div>
+                        </div>
+                    </div>
+                    <div class="profile-bio">
+                        <div class="bio-name">▶ 콘도 이사오 (@gorilla_stalker) 🦍</div>
+                        <div class="bio-quote">"お妙さぁぁぁん！！"</div>
+                    </div>
+                    <div class="action-btns">
+                        <div class="btn btn-follow">Follow +</div>
+                        <div class="btn btn-msg" onclick="openMessageModal(this)">Message</div>
+                    </div>
+                </div>
+
+                <div class="profile-wrapper">
+                    <div class="profile-top">
+                        <img src="https://github.com/FDJNDF56/A/blob/main/05.webp?raw=true" alt="히지카타" class="profile-pic" onerror="this.src='https://via.placeholder.com/80/000000/ccff00?text=MAYO'">
+                        <div class="profile-stats">
+                            <div><div class="stat-num">50</div>게시물</div>
+                            <div><div class="stat-num">80k</div>팔로워</div>
+                            <div><div class="stat-num">0</div>팔로잉</div>
+                        </div>
+                    </div>
+                    <div class="profile-bio">
+                        <div class="bio-name">▶ 히지카타 토시로 (@mayo_samurai) 🚬</div>
+                        <div class="bio-quote">"てめーら、全員切腹だ"</div>
+                    </div>
+                    <div class="action-btns">
+                        <div class="btn btn-follow">Follow +</div>
+                        <div class="btn btn-msg" onclick="openMessageModal(this)">Message</div>
+                    </div>
+                </div>
+
+                <div class="profile-wrapper">
+                    <div class="profile-top">
+                        <img src="https://github.com/FDJNDF56/A/blob/main/04.webp?raw=true" alt="소고" class="profile-pic" onerror="this.src='https://via.placeholder.com/80/000000/ccff00?text=SADIST'">
+                        <div class="profile-stats">
+                            <div><div class="stat-num">13</div>게시물</div>
+                            <div><div class="stat-num">900k</div>팔로워</div>
+                            <div><div class="stat-num">0</div>팔로잉</div>
+                        </div>
+                    </div>
+                    <div class="profile-bio">
+                        <div class="bio-name">▶ 오키타 소고 (@sadist_prince) ⚔️</div>
+                        <div class="bio-quote">"土方コノヤロー、死ねィ"</div>
+                    </div>
+                    <div class="action-btns">
+                        <div class="btn btn-follow">Follow +</div>
+                        <div class="btn btn-msg" onclick="openMessageModal(this)">Message</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- [3] 양이4인방 피드 -->
+            <div id="joyi" class="faction-view">
+                <div class="profile-wrapper">
+                    <div class="profile-top">
+                        <img src="https://github.com/FDJNDF56/A/blob/main/07.webp?raw=true" alt="카츠라" class="profile-pic" onerror="this.src='https://via.placeholder.com/80/000000/ccff00?text=ZURA'">
+                        <div class="profile-stats">
+                            <div><div class="stat-num">1k</div>게시물</div>
+                            <div><div class="stat-num">50k</div>팔로워</div>
+                            <div><div class="stat-num">999</div>팔로잉</div>
+                        </div>
+                    </div>
+                    <div class="profile-bio">
+                        <div class="bio-name">▶ 카츠라 코타로 (@not_zura_katsura) 🦆</div>
+                        <div class="bio-quote">"ヅラじゃない、桂だ！"</div>
+                    </div>
+                    <div class="action-btns">
+                        <div class="btn btn-follow">Follow +</div>
+                        <div class="btn btn-msg" onclick="openMessageModal(this)">Message</div>
+                    </div>
+                </div>
+                
+                <div class="profile-wrapper">
+                    <div class="profile-top">
+                        <img src="사카모토 타츠마.jpg" alt="사카모토" class="profile-pic" onerror="this.src='https://via.placeholder.com/80/000000/ccff00?text=AHAHA'">
+                        <div class="profile-stats">
+                            <div><div class="stat-num">300</div>게시물</div>
+                            <div><div class="stat-num">2M</div>팔로워</div>
+                            <div><div class="stat-num">500</div>팔로잉</div>
+                        </div>
+                    </div>
+                    <div class="profile-bio">
+                        <div class="bio-name">▶ 사카모토 타츠마 (@space_merchant) 💰</div>
+                        <div class="bio-quote">"アハハハハ！ 金時！"</div>
+                    </div>
+                    <div class="action-btns">
+                        <div class="btn btn-follow">Follow +</div>
+                        <div class="btn btn-msg" onclick="openMessageModal(this)">Message</div>
+                    </div>
+                </div>
+
+                <div class="profile-wrapper">
+                    <div class="profile-top">
+                        <img src="https://github.com/FDJNDF56/A/blob/main/09.webp?raw=true" alt="타카스기" class="profile-pic" onerror="this.src='https://via.placeholder.com/80/000000/ccff00?text=YAKULT'">
+                        <div class="profile-stats">
+                            <div><div class="stat-num">1</div>게시물</div>
+                            <div><div class="stat-num">1M</div>팔로워</div>
+                            <div><div class="stat-num">0</div>팔로잉</div>
+                        </div>
+                    </div>
+                    <div class="profile-bio">
+                        <div class="bio-name">▶ 타카스기 신스케 (@destroy_all) 🦋</div>
+                        <div class="bio-quote">"俺はただ壊すだけだ、この腐った世界を"</div>
+                    </div>
+                    <div class="action-btns">
+                        <div class="btn btn-follow">Follow +</div>
+                        <div class="btn btn-msg" onclick="openMessageModal(this)">Message</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- [4] 하루사메 피드 -->
+            <div id="harusame" class="faction-view">
+                <div class="profile-wrapper">
+                    <div class="profile-top">
+                        <img src="https://github.com/FDJNDF56/A/blob/main/08.webp?raw=true" alt="카무이" class="profile-pic" onerror="this.src='https://via.placeholder.com/80/000000/ccff00?text=SMILE'">
+                        <div class="profile-stats">
+                            <div><div class="stat-num">77</div>게시물</div>
+                            <div><div class="stat-num">3M</div>팔로워</div>
+                            <div><div class="stat-num">0</div>팔로잉</div>
+                        </div>
+                    </div>
+                    <div class="profile-bio">
+                        <div class="bio-name">▶ 카무이 (@rabbit_brother) 🍚</div>
+                        <div class="bio-quote">"邪魔だ、どいてくれる？ 弱い奴に用はないんだ"</div>
+                    </div>
+                    <div class="action-btns">
+                        <div class="btn btn-follow">Follow +</div>
+                        <div class="btn btn-msg" onclick="openMessageModal(this)">Message</div>
+                    </div>
+                </div>
+
+                <div class="profile-wrapper">
+                    <div class="profile-top">
+                        <img src="아부토.jpg" alt="아부토" class="profile-pic" onerror="this.src='https://via.placeholder.com/80/000000/ccff00?text=TIRED'">
+                        <div class="profile-stats">
+                            <div><div class="stat-num">20</div>게시물</div>
+                            <div><div class="stat-num">150k</div>팔로워</div>
+                            <div><div class="stat-num">1</div>팔로잉</div>
+                        </div>
+                    </div>
+                    <div class="profile-bio">
+                        <div class="bio-name">▶ 아부토 (@tired_uncle) 🌂</div>
+                        <div class="bio-quote">"人生って奴ァホント思い通りにならねェなァ"</div>
+                    </div>
+                    <div class="action-btns">
+                        <div class="btn btn-follow">Follow +</div>
+                        <div class="btn btn-msg" onclick="openMessageModal(this)">Message</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 💌 메세지 작성 모달 팝업 -->
+        <div id="msgModal" class="msg-modal">
+            <div class="msg-content">
+                <h3 id="msgTargetName">캐릭터에게</h3>
+                <textarea id="msgText" rows="4" placeholder="여기에 메세지를 적어주세요..."></textarea>
+                <div class="msg-actions">
+                    <button class="btn btn-send" onclick="sendMessage()">보내기 🚀</button>
+                    <button class="btn btn-cancel" onclick="closeModal()">취소 ❌</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function showFaction(factionId, element) {
+            // 모든 뷰 숨기기
+            const views = document.querySelectorAll('.faction-view');
+            views.forEach(view => view.classList.remove('active'));
+            
+            // 스토리 링 스타일 초기화
+            const rings = document.querySelectorAll('.story-ring');
+            rings.forEach(ring => ring.classList.remove('active'));
+
+            // 선택된 뷰 보여주기
+            document.getElementById(factionId).classList.add('active');
+            
+            // 선택된 스토리 링 활성화
+            element.querySelector('.story-ring').classList.add('active');
+
+            // 클릭 시 스크롤 맨 위로
+            document.querySelector('.feed-area').scrollTop = 0;
+        }
+
+        /* --- 추가된 메세지 기능 스크립트 --- */
+        
+        function openMessageModal(buttonElement) {
+            // 클릭한 버튼의 부모 프로필 영역 찾기
+            const profileWrapper = buttonElement.closest('.profile-wrapper');
+            // 캐릭터 이름 텍스트 가져오기
+            const fullBioName = profileWrapper.querySelector('.bio-name').innerText;
+            
+            // 이름만 깔끔하게 추출 ('▶ '와 '(@...)' 부분 제거)
+            let charName = fullBioName.replace('▶', '').split('(')[0].trim();
+
+            // 모달창 텍스트 변경 후 띄우기
+            document.getElementById('msgTargetName').innerText = `✨ ${charName}에게 ✨`;
+            document.getElementById('msgText').value = ''; // 기존 입력 내용 초기화
+            document.getElementById('msgModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('msgModal').classList.remove('active');
+        }
+
+        function sendMessage() {
+            const text = document.getElementById('msgText').value.trim();
+            if (text === '') {
+                alert('메세지 내용을 입력해주세요! 💦');
+                return;
+            }
+            alert('성공적으로 메세지를 보냈습니다! 💌');
+            closeModal();
+        }
+    </script>
+</body>
+</html>
